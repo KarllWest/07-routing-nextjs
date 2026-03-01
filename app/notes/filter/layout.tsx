@@ -1,3 +1,5 @@
+import TanStackProvider from '@/components/TanStackProvider';
+
 export default function NotesFilterLayout({
   children,
   sidebar,
