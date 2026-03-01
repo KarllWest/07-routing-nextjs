@@ -1,20 +1,29 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchNotes } from '@/lib/api';
 import { Note } from '@/types/note';
+import SearchBox from '@/components/SearchBox/SearchBox';
+import Pagination from '@/components/Pagination/Pagination';
+import NoteList from '@/components/NoteList/NoteList';
+import Modal from '@/components/Modal/Modal';
+import NoteForm from '@/components/NoteForm/NoteForm';
 
-function useDebounce<T>(value: T, delay: number): T {
+interface NotesProps {
+  tag: string;
+}
+
+function useDebounce(value: string, delay: number): string {
   const [debounced, setDebounced] = useState(value);
-  useState(() => {
+  useEffect(() => {
     const timer = setTimeout(() => setDebounced(value), delay);
     return () => clearTimeout(timer);
-  });
+  }, [value, delay]);
   return debounced;
 }
 
-export default function Notes({ tag }: { tag: string }) {
+export default function Notes({ tag }: NotesProps) {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,27 +50,18 @@ export default function Notes({ tag }: { tag: string }) {
 
   return (
     <div>
-      <input
-        type="text"
-        value={search}
-        onChange={handleSearchChange}
-        placeholder="Search notes..."
-      />
+      <SearchBox />
       <button onClick={() => setIsModalOpen(true)}>Add Note</button>
 
-      <ul>
-        {data?.notes.map((note: Note) => (
-          <li key={note.id}>{note.title}</li>
-        ))}
-      </ul>
+      <NoteList />
 
-      <div>
-        {Array.from({ length: data?.totalPages ?? 1 }, (_, i) => (
-          <button key={i + 1} onClick={() => setPage(i + 1)} disabled={page === i + 1}>
-            {i + 1}
-          </button>
-        ))}
-      </div>
+      <Pagination />
+
+      {isModalOpen && (
+        <Modal onClose={() => setIsModalOpen(false)}>
+          <NoteForm />
+        </Modal>
+      )}
     </div>
   );
 }

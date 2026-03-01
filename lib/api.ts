@@ -35,6 +35,7 @@ export async function createNote(note: Partial<Note>): Promise<Note> {
   return data;
 }
 
-export async function deleteNote(id: string): Promise<void> {
-  await axios.delete(`${API_URL}/notes/${id}`, { headers });
+export async function deleteNote(id: string): Promise<Note> {
+  const { data } = await axios.delete<Note>(`${API_URL}/notes/${id}`, { headers });
+  return data;
 }
