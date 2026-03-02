@@ -1,3 +1,5 @@
+import LayoutNotes from '@/components/LayoutNotes/LayoutNotes';
+
 export default function FilterLayout({
   children,
   sidebar,
@@ -5,10 +7,5 @@ export default function FilterLayout({
   children: React.ReactNode;
   sidebar: React.ReactNode;
 }) {
-  return (
-    <div style={{ display: 'flex', gap: '16px' }}>
-      {sidebar}
-      {children}
-    </div>
-  );
+  return <LayoutNotes sidebar={sidebar}>{children}</LayoutNotes>;
 }

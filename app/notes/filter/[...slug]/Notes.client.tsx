@@ -2,15 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { fetchNotes } from '@/lib/api';
-import { Note } from '@/types/note';
+import { useSearchParams } from 'next/navigation'; // Додаємо цей хук
+import { fetchNotes } from '@/lib/api/api';
 import SearchBox from '@/components/SearchBox/SearchBox';
 import Pagination from '@/components/Pagination/Pagination';
-import NoteList from '@/components/NoteList/NoteList';
+import NoteList from '@/components/NoteList/NoteList'; 
 import Modal from '@/components/Modal/Modal';
 import NoteForm from '@/components/NoteForm/NoteForm';
+import NotesPageComponent from '@/components/NotesPage/NotesPage';
 
-interface NotesProps {
+interface NotesPageProps {
   tag: string;
 }
 
@@ -23,11 +24,13 @@ function useDebounce(value: string, delay: number): string {
   return debounced;
 }
 
-export default function Notes({ tag }: NotesProps) {
+export default function Notes({ tag }: NotesPageProps) {
+  const searchParams = useSearchParams();
   const [search, setSearch] = useState('');
-  const [page, setPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const page = Number(searchParams.get('page')) || 1;
+  
   const debouncedSearch = useDebounce(search, 300);
 
   const { data, isLoading, isError } = useQuery({
@@ -40,28 +43,39 @@ export default function Notes({ tag }: NotesProps) {
       }),
   });
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-    setPage(1);
-  };
-
-  if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Error loading notes.</p>;
+  if (isLoading) return <p style={{ padding: 24 }}>Loading...</p>;
+  if (isError) return <p style={{ padding: 24 }}>Error loading notes.</p>;
 
   return (
-    <div>
-      <SearchBox />
-      <button onClick={() => setIsModalOpen(true)}>Add Note</button>
+    <NotesPageComponent onAddNote={() => setIsModalOpen(true)}>
+      <div style={{ marginBottom: '24px' }}>
+        <SearchBox 
+          value={search} 
+          onChange={(val) => {
+            setSearch(val);
+          }} 
+        />
+      </div>
 
-      <NoteList />
+      {data?.notes && data.notes.length > 0 ? (
+        <NoteList notes={data.notes} />
+      ) : (
+        <p>No notes found.</p>
+      )}
 
-      <Pagination />
+      {data?.totalPages && data.totalPages > 1 && (
+        <Pagination 
+          currentPage={page} 
+          totalPages={data.totalPages} 
+          basePath={`/notes/filter/${tag}?page=`} 
+        />
+      )}
 
       {isModalOpen && (
         <Modal onClose={() => setIsModalOpen(false)}>
-          <NoteForm />
+          <NoteForm onCancel={() => setIsModalOpen(false)} />
         </Modal>
       )}
-    </div>
+    </NotesPageComponent>
   );
 }

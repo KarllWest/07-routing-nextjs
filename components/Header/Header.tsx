@@ -4,9 +4,19 @@ import styles from './Header.module.css';
 export default function Header() {
   return (
     <header className={styles.header}>
-      <nav className={styles.nav}>
-        <Link href="/">Home</Link>
-        <Link href="/notes/filter/all">Notes</Link>
+      <Link href="/" className={styles.headerLink}>
+        NoteHub
+      </Link>
+      
+      <nav>
+        <ul className={styles.navigation}>
+          <li className={styles.navigationItem}>
+            <Link href="/" className={styles.navigationLink}>Home</Link>
+          </li>
+          <li className={styles.navigationItem}>
+            <Link href="/notes/filter/all" className={styles.navigationLink}>Notes</Link>
+          </li>
+        </ul>
       </nav>
     </header>
   );

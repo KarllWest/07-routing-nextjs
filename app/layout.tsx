@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import TanStackProvider from '@/components/TanStackProvider/TanStackProvider';
 import Header from '@/components/Header/Header';
-import Footer from '@/components/Footer/Footer';
+import Footer from '@/components/Footer/Footer'; 
 
 export const metadata: Metadata = {
   title: 'NoteHub',
@@ -18,12 +18,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body suppressHydrationWarning>
         <TanStackProvider>
           <Header />
-          <main>{children}</main>
-          <Footer />
+          
+          <main style={{ flex: 1 }}>{children}</main>
+          
           {modal}
+          <Footer />
         </TanStackProvider>
       </body>
     </html>
