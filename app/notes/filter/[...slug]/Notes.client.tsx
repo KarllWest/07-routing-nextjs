@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useSearchParams } from 'next/navigation'; // Додаємо цей хук
 import { fetchNotes } from '@/lib/api';
 import SearchBox from '@/components/SearchBox/SearchBox';
 import Pagination from '@/components/Pagination/Pagination';
@@ -25,13 +24,15 @@ function useDebounce(value: string, delay: number): string {
 }
 
 export default function Notes({ tag }: NotesPageProps) {
-  const searchParams = useSearchParams();
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const page = Number(searchParams.get('page')) || 1;
   
   const debouncedSearch = useDebounce(search, 300);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['notes', tag, debouncedSearch, page],
@@ -53,6 +54,7 @@ export default function Notes({ tag }: NotesPageProps) {
           value={search} 
           onChange={(val) => {
             setSearch(val);
+            setPage(1); 
           }} 
         />
       </div>
@@ -64,11 +66,17 @@ export default function Notes({ tag }: NotesPageProps) {
       )}
 
       {data?.totalPages && data.totalPages > 1 && (
-        <Pagination 
-          currentPage={page} 
-          totalPages={data.totalPages} 
-          basePath={`/notes/filter/${tag}?page=`} 
-        />
+        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '20px' }}>
+            {Array.from({ length: data.totalPages }, (_, i) => i + 1).map((p) => (
+                <button 
+                  key={p} 
+                  onClick={() => setPage(p)}
+                  style={{ fontWeight: page === p ? 'bold' : 'normal' }}
+                >
+                  {p}
+                </button>
+            ))}
+        </div>
       )}
 
       {isModalOpen && (
