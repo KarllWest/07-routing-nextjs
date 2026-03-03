@@ -2,9 +2,9 @@
 
 import css from './NotePreview.module.css';
 import { useQuery } from '@tanstack/react-query';
-import { fetchNoteById } from '@/lib/api/api'; 
+import { fetchNoteById } from '@/lib/api'; 
 import { Note } from '@/types/note';
-import { useRouter } from 'next/navigation'; // 👈 Додали для кнопки закриття
+import { useRouter } from 'next/navigation'; 
 
 interface NotePreviewProps {
   noteId: string;
