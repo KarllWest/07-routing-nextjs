@@ -24,10 +24,11 @@ export default function NoteForm({ onSubmit, onCancel }: NoteFormProps) {
       <div className={css.formGroup}>
         <label htmlFor="tag">Tag</label>
         <select id="tag" name="tag" className={css.select}>
-          <option value="work">Work</option>
-          <option value="personal">Personal</option>
-          <option value="ideas">Ideas</option>
-          <option value="important">Important</option>
+          <option value="Todo">Todo</option>
+          <option value="Work">Work</option>
+          <option value="Personal">Personal</option>
+          <option value="Meeting">Meeting</option>
+          <option value="Shopping">Shopping</option>
         </select>
       </div>
 

@@ -66,17 +66,11 @@ export default function Notes({ tag }: NotesPageProps) {
       )}
 
       {data?.totalPages && data.totalPages > 1 && (
-        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '20px' }}>
-            {Array.from({ length: data.totalPages }, (_, i) => i + 1).map((p) => (
-                <button 
-                  key={p} 
-                  onClick={() => setPage(p)}
-                  style={{ fontWeight: page === p ? 'bold' : 'normal' }}
-                >
-                  {p}
-                </button>
-            ))}
-        </div>
+        <Pagination 
+          currentPage={page} 
+          totalPages={data.totalPages} 
+          onPageChange={setPage} 
+        />
       )}
 
       {isModalOpen && (

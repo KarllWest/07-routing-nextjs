@@ -1,13 +1,12 @@
-import Link from 'next/link';
 import css from './Pagination.module.css';
 
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
-  basePath: string; 
+  onPageChange: (page: number) => void; 
 }
 
-export default function Pagination({ currentPage, totalPages, basePath }: PaginationProps) {
+export default function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
   if (totalPages <= 1) return null;
 
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -15,21 +14,21 @@ export default function Pagination({ currentPage, totalPages, basePath }: Pagina
   return (
     <ul className={css.pagination}>
       {pages.map((page) => (
-        <li 
-          key={page} 
-          className={`${page === currentPage ? css.active : ''}`}
-        >
-          <Link href={`${basePath}${page}`}>
+        <li key={page} className={`${page === currentPage ? css.active : ''}`}>
+          <button 
+            type="button"
+            onClick={() => onPageChange(page)}
+          >
             {page}
-          </Link>
+          </button>
         </li>
       ))}
       
       {currentPage < totalPages && (
         <li>
-          <Link href={`${basePath}${currentPage + 1}`}>
+          <button type="button" onClick={() => onPageChange(currentPage + 1)}>
             »
-          </Link>
+          </button>
         </li>
       )}
     </ul>
