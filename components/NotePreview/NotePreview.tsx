@@ -1,8 +1,8 @@
 'use client';
 
 import css from './NotePreview.module.css';
-import { useQuery } from '@tanstack/react-query';
-import { fetchNoteById } from '@/lib/api'; 
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'; 
+import { fetchNoteById, deleteNote } from '@/lib/api'; 
 import { Note } from '@/types/note';
 import { useRouter } from 'next/navigation'; 
 
@@ -12,12 +12,27 @@ interface NotePreviewProps {
 
 export default function NotePreview({ noteId }: NotePreviewProps) {
   const router = useRouter(); 
+  const queryClient = useQueryClient(); 
   
   const { data, isLoading, error } = useQuery<Note>({
     queryKey: ['note', noteId],
     queryFn: () => fetchNoteById(noteId),
     enabled: !!noteId,
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteNote(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
+      router.back();
+    },
+  });
+
+  const handleDelete = () => {
+    if (window.confirm('Are you sure you want to delete this note?')) {
+      deleteMutation.mutate(noteId);
+    }
+  };
 
   if (isLoading) return <div className={css.container}><div className={css.content}>Loading...</div></div>;
   if (error) return <div className={css.container}><div className={css.content}>Error loading note</div></div>;
@@ -46,6 +61,23 @@ export default function NotePreview({ noteId }: NotePreviewProps) {
           )}
         </div>
         
+        <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}>
+          <button 
+            onClick={handleDelete} 
+            disabled={deleteMutation.isPending}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#dc3545', 
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: deleteMutation.isPending ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+          </button>
+        </div>
+
       </div>
     </div>
   );

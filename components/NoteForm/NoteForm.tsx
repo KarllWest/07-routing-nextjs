@@ -1,29 +1,53 @@
+'use client';
+
+import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { createNote } from '@/lib/api';
 import css from './NoteForm.module.css';
 
 interface NoteFormProps {
-  onSubmit?: (e: React.FormEvent) => void;
   onCancel?: () => void;
 }
 
-export default function NoteForm({ onSubmit, onCancel }: NoteFormProps) {
+export default function NoteForm({ onCancel }: NoteFormProps) {
+  const [title, setTitle] = useState('');
+  const [tag, setTag] = useState('Todo');
+  const [content, setContent] = useState('');
+
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: () => createNote({ title, tag, content }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
+      onCancel?.();
+    },
+  });
+
+  const handleSubmit = (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    mutation.mutate();
+  };
+
   return (
-    <form className={css.form} onSubmit={onSubmit}>
-      
+    <form className={css.form} onSubmit={handleSubmit}>
+
       <div className={css.formGroup}>
         <label htmlFor="title">Title</label>
-        <input 
-          type="text" 
-          id="title" 
-          name="title" 
-          className={css.input} 
-          placeholder="Enter note title..." 
-          required 
+        <input
+          type="text"
+          id="title"
+          className={css.input}
+          placeholder="Enter note title..."
+          required
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
         />
       </div>
 
       <div className={css.formGroup}>
         <label htmlFor="tag">Tag</label>
-        <select id="tag" name="tag" className={css.select}>
+        <select id="tag" className={css.select} value={tag} onChange={(e) => setTag(e.target.value)}>
           <option value="Todo">Todo</option>
           <option value="Work">Work</option>
           <option value="Personal">Personal</option>
@@ -33,14 +57,15 @@ export default function NoteForm({ onSubmit, onCancel }: NoteFormProps) {
       </div>
 
       <div className={css.formGroup}>
-        <label htmlFor="text">Content</label>
-        <textarea 
-          id="text" 
-          name="content" 
-          className={css.textarea} 
-          rows={5} 
-          placeholder="Write your note here..." 
+        <label htmlFor="content">Content</label>
+        <textarea
+          id="content"
+          className={css.textarea}
+          rows={5}
+          placeholder="Write your note here..."
           required
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
         />
       </div>
 
@@ -48,11 +73,11 @@ export default function NoteForm({ onSubmit, onCancel }: NoteFormProps) {
         <button type="button" className={css.cancelButton} onClick={onCancel}>
           Cancel
         </button>
-        <button type="submit" className={css.submitButton}>
-          Save Note
+        <button type="submit" className={css.submitButton} disabled={mutation.isPending}>
+          {mutation.isPending ? 'Saving...' : 'Save Note'}
         </button>
       </div>
-      
+
     </form>
   );
 }
