@@ -1,17 +1,5 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import HomeComponent from '@/components/Home/Home';
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <div className={styles.description}>
-          <p>
-            Get started by editing&nbsp;
-            <code className={styles.code}>app/page.tsx</code>
-          </p>
-        </div>
-      </main>
-    </div>
-  );
+  return <HomeComponent />;
 }
