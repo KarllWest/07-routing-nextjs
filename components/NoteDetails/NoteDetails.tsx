@@ -20,14 +20,12 @@ export default function NoteDetails({ note, onBack }: NoteDetailsProps) {
         <div className={css.item}>
           <div className={css.header}>
             <h2>{note.title}</h2>
-              {note.tag && <span className={css.tag}>{note.tag}</span>}
           </div>
-
+          {note.tag && <p className={css.tag}>{note.tag}</p>}
           <p className={css.content}>{note.content}</p>
-
-          <div className={css.date}>
+          <p className={css.date}>
             {note.createdAt ? new Date(note.createdAt).toLocaleDateString() : ''}
-          </div>
+          </p>
         </div>
         
       </div>

@@ -3,20 +3,16 @@ import { ReactNode } from 'react';
 
 interface NotesPageProps {
   children?: ReactNode;
-  onAddNote?: () => void;
+  toolbar?: ReactNode;
 }
 
-export default function NotesPageComponent({ children, onAddNote }: NotesPageProps) {
+export default function NotesPageComponent({ children, toolbar }: NotesPageProps) {
   return (
     <div className={css.app}>
 
-      <div className={css.toolbar}>
-        <h2>My Notes</h2>
-
-        <button type="button" className={css.button} onClick={onAddNote}>
-          + Add Note
-        </button>
-      </div>
+      <header className={css.toolbar}>
+        {toolbar}
+      </header>
 
       <div>
         {children}
